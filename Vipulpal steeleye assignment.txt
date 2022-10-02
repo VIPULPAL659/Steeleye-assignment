@@ -1,0 +1,114 @@
+
+1-Explain what the simple List component does.
+
+1-> A collection defined:
+Let us just look at how to generate a list with React. To accomplish this, researchers will traverse the column element using the map() code and will surround modifications in square brackets. The parts and components are then assigned to listItems. Finally, display this list on the Web by putting it among the ul> and /ul> components.
+
+2-> React's components list creation work:
+In order to create lists of pieces, students must use the character characteristic "key," as specified in the React documentation. To determine whether items in a list had already been modified, added, or destroyed, React need so many keys. An individual identifier is required for each object. The id about an entity usually works nicely for all of that.
+
+3-> Collection but instead attributes presume:
+Whenever making lists of components in Javascript, users must use a special word attribute called "key". React uses keys to indicate whether additional burdens have been modified, removed, or altered. Or, to put it another way, designers may say that keywords are applied to identify the components in collections.
+2-What problems / warnings are there with code?
+1->const [setSelectedIndex , SelectedIndex] = useState();
+Here useState Hook is used but the variable selectedIndex and setSelectedIndex are should interchange their position
+because SetSelectedIndex is used to set the value of the SelectedIndex value . So for that we can write
+const [SelectedIndex,setSelectedIndex]= useState();
+
+2->WrappedListComponent.defaultProps has items: null. Therefore there is no item to be mapped.
+Fixed code:
+WrappedListComponent.defaultProps = {
+items: [{ text: "First Item" }, { text: "Second Item" }]
+};
+Each child in a list should have a unique "key" prop.
+Fixed code:
+<ul style={{ textAlign: "left" }}>
+{items.map((item, index) => (
+<SingleListItem
+onClickHandler={() => handleClick(index)}
+text={item.text}
+index={index}
+isSelected={selectedIndex}
+key={index}
+/>
+))}
+
+3-> Defining a default prop as null is not recommended.
+WrappedListComponent.defaultProps = {
+items: null,
+};
+3->Please fix, optimize, and/or modify the component as much as you think is necessary
+import React, { useState, useEffect, memo } from 'react';
+import PropTypes from 'prop-types';
+
+// Single List Item
+const WrappedSingleListItem = ({
+  index,
+  isSelected,
+  onClickHandler,
+  text,
+}) => {
+  return (
+    <li
+      style={{ backgroundColor: isSelected ? 'green' : 'red'}}
+      onClick={onClickHandler(index)}
+    >
+      {text}
+    </li>
+  );
+};
+
+WrappedSingleListItem.propTypes = {
+index: PropTypes.number.isRequired,
+  isSelected: PropTypes.bool.isRequired,
+  onClickHandler: PropTypes.func.isRequired,
+  text: PropTypes.string.isRequired,
+};
+
+const SingleListItem = memo(WrappedSingleListItem);
+
+// List Component
+const WrappedListComponent = ({
+  items,
+}) => {
+ const [selectedIndex,setSelectedIndex] = useState(false);
+
+  useEffect(() => {
+    setSelectedIndex(false);
+  }, [items]);
+
+  const handleClick = index => {
+    setSelectedIndex(index);
+  };
+
+  return (
+    <ul style={{ textAlign: 'left' }}>
+      {items.map((item, index) => (
+        <SingleListItem
+          key={index}
+          onClickHandler={() => handleClick(index)}
+          text={item.text}
+          index={index}
+          isSelected={selectedIndex}
+        />
+      ))}
+    </ul>
+  )
+};
+
+WrappedListComponent.propTypes = {
+  items: PropTypes.array(PropTypes.shape({
+    text: PropTypes.string.isRequired,
+  })),
+};
+
+WrappedListComponent.defaultProps = {
+  items: [{ text: "First Item" }, { text: "Second Item" }],
+};
+
+const List = memo(WrappedListComponent);
+
+export default List;
+
+
+
